@@ -2,20 +2,6 @@
 import Estudiante from "../models/estudiantes.js"
 import mongoose from "mongoose"
 
-
-// Método para ver el perfil 
-const perfilEstudiante =(req,res)=>{
-    delete req.estudianteBDD.ingreso
-    delete req.estudianteBDD.sintomas
-    delete req.estudianteBDD.salida
-    delete req.estudianteBDD.estado
-    delete req.estudianteBDD.veterinario
-    delete req.estudianteBDD.createdAt
-    delete req.estudianteBDD.updatedAt
-    delete req.estudianteBDD.__v
-    res.status(200).json(req.estudianteBDD)
-}
-
 // Método para listar todos los Estudiantes
 const listarEstudiantes = async (req, res) => {
     try {
@@ -44,6 +30,8 @@ const registroEstudiantes = async (req, res) => {
         if (correoExistente) {
             return res.status(400).json({ msg: "El correo electrónico ya está registrado" });
         }
+        /*// Convertir la fecha de nacimiento a formato ISODate sin la parte de la hora
+        const fechaNacimientoSinHora = new Date(fecha_de_nacimiento).toISOString().split('T')[0];*/
         // Crear un nuevo estudiante con los datos proporcionados
         const nuevoEstudiante = new Estudiante({
             nombre,
@@ -105,7 +93,6 @@ const eliminarEstudiantes = async (req, res) => {
 };
 
 export {
-		perfilEstudiante,
         listarEstudiantes,
         registroEstudiantes,
         actualizarEstudiantes,

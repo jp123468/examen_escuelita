@@ -1,5 +1,4 @@
 import {Schema, model} from 'mongoose'
-import bcrypt from "bcryptjs"
 import { response } from 'express'
 
 const estudianteSchema = new Schema({
