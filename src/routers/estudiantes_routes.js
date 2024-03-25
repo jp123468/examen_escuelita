@@ -2,9 +2,9 @@ import {Router} from 'express'
 import {
     registroEstudiantes,
     listarEstudiantes,
-    detalleEstudiante,
-    actualizarEstudiante,
-    eliminarEstudiante,
+    //detalleEstudiantes,
+    actualizarEstudiantes,
+    eliminarEstudiantes,
 } from "../controllers/estudiantes_controllers.js";
 
 
@@ -33,11 +33,8 @@ const router = Router()
  *                 type : string
  *                 example: Julio 
  *               cedula:
- *                 type: Int32
+ *                 type: string
  *                 example: 9999999999
- *               fecha_de_nacimiento:
- *                 type: date
- *                 example: 14/11/2021
  *               ciudad:
  *                 type: string
  *                 example: San Pedro Sula
@@ -48,7 +45,7 @@ const router = Router()
  *                 type: string
  *                 example: julio@hotmail.com
  *               telefono:
- *                 type: Init32
+ *                 type: string
  *                 example: 099999999
 
  *     responses:
@@ -81,9 +78,6 @@ const router = Router()
  *                              cedula:
  *                                type: Int32
  *                                example: 9999999999
- *                              fecha_de_nacimiento:
- *                                type: date
- *                                example: 14/11/2021
  *                              ciudad:
  *                                type: string
  *                                example: San Pedro Sula
@@ -184,7 +178,7 @@ router.get('/estudiantes',listarEstudiantes)
  *                           example: juan@example.com
  */
 
-router.get('/estudiantes/:id',detalleEstudiante)
+//router.get('/estudiantes/:id',detalleEstudiantes)
 /**
  * @openapi
  * /api/estudiantes/actulizar/{id}:
@@ -259,11 +253,11 @@ router.get('/estudiantes/:id',detalleEstudiante)
 
 
 
-router.put('/estudiantes/actualizar/:id',actualizarEstudiante)
+router.put('/estudiantes/actualizar/:id',actualizarEstudiantes)
 
 /**
  * @openapi
- * /api/estudaintes/eliminar/{id}:
+ * /api/estudiantes/eliminar/{id}:
  *   delete:
  *     tags:
  *       - Estudiantes
@@ -299,7 +293,7 @@ router.put('/estudiantes/actualizar/:id',actualizarEstudiante)
  *                   items: 
  *                     type: object
  */
-router.delete("/estudiantes/eliminar/:id",eliminarEstudiante);
+router.delete("/estudiantes/eliminar/:id",eliminarEstudiantes);
 
 export default router
 

@@ -1,6 +1,5 @@
 // IMPORTAR EL MODELO
 import Estudiante from "../models/estudiantes.js"
-//import Tratamiento from "../models/Tratamiento.js"
 import mongoose from "mongoose"
 
 
@@ -17,139 +16,98 @@ const perfilEstudiante =(req,res)=>{
     res.status(200).json(req.estudianteBDD)
 }
 
-// Método para listar todos los pacientes
-const listarPacientes = async (req,res)=>{
-    if (req.pacienteBDD && "propietario" in req.pacienteBDD){
-        const pacientes = await Paciente.find(req.pacienteBDD._id).select("-salida -createdAt -updatedAt -__v").populate('veterinario','_id nombre apellido')
-        res.status(200).json(pacientes)
-    }
-    else{
-    // Obtener todos los pacientes que se enceuntren activos
-    // Que sean solo los del paciente que inicie sesión
-    // Quitar campos no necesarios 
-    // Mostrar campos de documentos relacionados
-    const pacientes = await Paciente.find({estado:true}).where('veterinario').equals(req.veterinarioBDD).select("-salida -createdAt -updatedAt -__v").populate('veterinario','_id nombre apellido')
-    // Respuesta 
-    res.status(200).json(pacientes)
+// Método para listar todos los Estudiantes
+const listarEstudiantes = async (req, res) => {
+    try {
+        const estudiantes = await Estudiante.find().select("-salida -createdAt -updatedAt -__v")
+        res.status(200).json(estudiantes);
+    } catch (error) {
+        console.error("Error al obtener la lista de estudiantes:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 }
 
-
-
-// Método para ver el detalle de un paciente en particular
-const detallePaciente = async(req,res)=>{
-    const {id} = req.params
-    if( !mongoose.Types.ObjectId.isValid(id) ) return res.status(404).json({msg:`Lo sentimos, no existe el veterinario ${id}`});
-    const paciente = await Paciente.findById(id).select("-createdAt -updatedAt -__v").populate('veterinario','_id nombre apellido')
-    const tratamientos = await Tratamiento.find({estado:true}).where('paciente').equals(id)
-    res.status(200).json({
-        paciente,
-        tratamientos
-    })
-}
-
-
-
-
-
-
-// Método para registrar un paciente
-const registrarPaciente = async(req,res)=>{
-
-    // desestructurar el email
-    const {email} = req.body
-
-
-    //  Validar todos los camposs
-    if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Lo sentimos, debes llenar todos los campos"})
-    
-    
-    // Obtener el usuario en base al email
-    const verificarEmailBDD = await Paciente.findOne({email})
-
-
-    // Verificar si el paciente ya se encuentra registrado
-    if(verificarEmailBDD) return res.status(400).json({msg:"Lo sentimos, el email ya se encuentra registrado"})
-
-
-
-    
-
-    // Crear una instancia del Paciente
-    const nuevoPaciente = new Paciente(req.body)
-
-
-    // Crear un password
-    const password = Math.random().toString(36).slice(2)
-
-
-    // Encriptar el password
-    nuevoPaciente.password = await nuevoPaciente.encrypPassword("vet"+password)
-
-
-    // Enviar el correo electrónico
-    await sendMailToPaciente(email,"vet"+password)
-
-
-    // Asociar el paciente con el veterinario
-    nuevoPaciente.veterinario=req.veterinarioBDD._id
-
-
-    // Guardar en BDD
-    await nuevoPaciente.save()
-
-    // Presentar resultados
-    res.status(200).json({msg:"Registro exitoso del paciente y correo enviado"})
-}
-
+const registroEstudiantes = async (req, res) => {
+    try {
+        const { nombre, apellido, cedula, fecha_de_nacimiento, ciudad, direccion, email, telefono } = req.body;
+        // Verificar campos requeridos
+        if (!nombre || !apellido || !cedula || !fecha_de_nacimiento || !ciudad || !direccion || !email || !telefono) {
+            return res.status(400).json({ msg: "Todos los campos son obligatorios" });
+        }
+        // Verificar si la cédula ya existe
+        const cedulaExistente = await Estudiante.findOne({ cedula });
+        if (cedulaExistente) {
+            return res.status(400).json({ msg: "La cédula ya está registrada" });
+        }
+        // Verificar si el correo electrónico ya existe
+        const correoExistente = await Estudiante.findOne({ email });
+        if (correoExistente) {
+            return res.status(400).json({ msg: "El correo electrónico ya está registrado" });
+        }
+        // Crear un nuevo estudiante con los datos proporcionados
+        const nuevoEstudiante = new Estudiante({
+            nombre,
+            apellido,
+            cedula,
+            ciudad,
+            direccion,
+            email,
+            telefono
+        });
+        // Guardar el estudiante en la base de datos
+        await nuevoEstudiante.save();
+        res.status(200).json({ msg: "Registro exitoso del estudiante" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Error al registrar el estudiante" });
+    }
+};
 
 
 
 // Método para actualizar un paciente
-const actualizarPaciente = async(req,res)=>{
-    const {id} = req.params
+const actualizarEstudiantes = async(req,res)=>{
 
+    const {id} = req.params
+try{
     if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Lo sentimos, debes llenar todos los campos"})
 
-    if( !mongoose.Types.ObjectId.isValid(id) ) return res.status(404).json({msg:`Lo sentimos, no existe el veterinario ${id}`});
+    await Estudiante.findByIdAndUpdate(req.params.id,req.body)
 
-    await Paciente.findByIdAndUpdate(req.params.id,req.body)
-
-    res.status(200).json({msg:"Actualización exitosa del paciente"})
+    res.status(200).json({msg:"Actualización exitosa del estudiante"})
+}
+catch(error) {
+    console.error(error);
+    res.status(500).json({msg:"No se pudo actulizar los datos del estudiante"})
 }
 
-
-
-
-
-
-
-// Método para eliminar(dar de baja) un paciente
-const eliminarPaciente = async (req,res)=>{
-    const {id} = req.params
-
-    if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Lo sentimos, debes llenar todos los campos"})
-
-    if( !mongoose.Types.ObjectId.isValid(id) ) return res.status(404).json({msg:`Lo sentimos, no existe el veterinario ${id}`})
-
-    const {salida} = req.body
-
-    await Paciente.findByIdAndUpdate(req.params.id,{salida:Date.parse(salida),estado:false})
-    
-    res.status(200).json({msg:"Fecha de salida del paciente registrado exitosamente"})
 }
 
-
-
-
-
+const eliminarEstudiantes = async (req, res) => {
+    try {
+        const estudianteId = req.params.id; // Obtener el ID del estudiante de los parámetros de la URL
+        // Verificar si el ID del estudiante es válido
+        if (!estudianteId) {
+            return res.status(400).json({ msg: "ID de estudiante no proporcionado" });
+        }
+        // Verificar si el estudiante existe en la base de datos
+        const estudiante = await Estudiante.findById(estudianteId);
+        if (!estudiante) {
+            return res.status(404).json({ msg: "Estudiante no encontrado" });
+        }
+        // Eliminar el estudiante de la base de datos
+        await estudiante.remove();
+        res.status(200).json({ msg: "Estudiante eliminado correctamente" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Error al eliminar el estudiante" });
+    }
+};
 
 export {
-		loginPaciente,
-		perfilPaciente,
-        listarPacientes,
-        detallePaciente,
-        registrarPaciente,
-        actualizarPaciente,
-        eliminarPaciente
+		perfilEstudiante,
+        listarEstudiantes,
+        registroEstudiantes,
+        actualizarEstudiantes,
+        eliminarEstudiantes
 }

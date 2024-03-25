@@ -18,11 +18,6 @@ const estudianteSchema = new Schema({
         require:true,
         trim:true,
     },
-    fecha_de_nacimiento:{
-        type:Date,
-        required:true,
-        trim:true,
-    },
     ciudad:{
         type: String,
         require: true,
@@ -40,13 +35,9 @@ const estudianteSchema = new Schema({
 		unique:true
     },
     telefono:{
-        type:Int8Array,
+        type:Number,
         require:true
-    },
-    status:{
-        type:Boolean,
-        default:true
-    },
+    }   
 })
 
 
