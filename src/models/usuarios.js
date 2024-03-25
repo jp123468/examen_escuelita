@@ -23,10 +23,6 @@ const usuarioSchema = new Schema({
         type:String,
         require:true
     },
-    status:{
-        type:Boolean,
-        default:true
-    },
 })
 
 // Método para cifrar el password del usuario

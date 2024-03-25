@@ -2,7 +2,7 @@ import {Router} from 'express'
 import {
     registroEstudiantes,
     listarEstudiantes,
-    detalleEstudainte,
+    detalleEstudiante,
     actualizarEstudiante,
     eliminarEstudiante,
 } from "../controllers/estudiantes_controllers.js";
@@ -13,10 +13,10 @@ const router = Router()
 
 /**
  * @openapi
- * /api/registroEstudiantes:
+ * /api/estudiantes/registro:
  *   post:
  *     tags:
- *       - Registro Estudiantes
+ *       - Estudiantes
  *     summary: Registro de Estudiante
  *     description: Crea un nuevo estudiante.
  *     requestBody:
@@ -35,15 +35,21 @@ const router = Router()
  *               cedula:
  *                 type: Int32
  *                 example: 9999999999
- *               fecha:
+ *               fecha_de_nacimiento:
  *                 type: date
  *                 example: 14/11/2021
+ *               ciudad:
+ *                 type: string
+ *                 example: San Pedro Sula
+ *               direccion:
+ *                 type: string
+ *                 example: Pueblo Nuevo
  *               email:
  *                 type: string
  *                 example: julio@hotmail.com
- *               password:
- *                 type: string
- *                 example: contraseña
+ *               telefono:
+ *                 type: Init32
+ *                 example: 099999999
 
  *     responses:
  *       200:
@@ -65,25 +71,41 @@ const router = Router()
  *                     user:
  *                       type: object
  *                       properties:
- *                         email:
- *                           type: string
- *                           example: julio@hotmail.com
- *                         nombre:
- *                           type: string
- *                           example: Julio
- *                         apellido:
- *                           type : string
- *                           example: Julio 
+ *                           properties:
+ *                              nombre:
+ *                                type: string
+ *                                example: Julio
+ *                              apellido:
+ *                                type : string
+ *                                example: Julio 
+ *                              cedula:
+ *                                type: Int32
+ *                                example: 9999999999
+ *                              fecha_de_nacimiento:
+ *                                type: date
+ *                                example: 14/11/2021
+ *                              ciudad:
+ *                                type: string
+ *                                example: San Pedro Sula
+ *                              direccion:
+ *                                type: string
+ *                                example: Pueblo Nuevo
+ *                              email:
+ *                                type: string
+ *                                example: julio@hotmail.com
+ *                              telefono:
+ *                                type: Init32
+ *                                example: 099999999
  */
 
-router.post('/registro',registro)
+router.post('/estudiantes/registro',registroEstudiantes)
 
 /**
  * @openapi
- * /api/usuarios:
+ * /api/estudiantes:
  *   get:
  *     tags:
- *       - Usuarios
+ *       - Estudiantes
  *     responses:
  *       200:
  *         description: OK
@@ -118,142 +140,13 @@ router.post('/registro',registro)
  *                           example: s45l5oi10A
  */
 
-router.get('/usuarios',listarUsuarios)
-
+router.get('/estudiantes',listarEstudiantes)
 /**
  * @openapi
- * /api/recuperar-password:
- *   post:
- *     tags:
- *       - Recuperar Contraseña Usuarios
- *     requestBody:
- *      required: true
- *      content:
- *        application/json:
- *           schema:
- *             type: object
- *             properties:
- *               correo:
- *                 type: string
- *                 example: julio@hotmail.com
- 
-
- *     responses:
- *       200:
- *         description: OK
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message: 
- *                   type: string
- *                   example: Contraseña recuperada exitosamente
- *                 status:
- *                   type: string
- *                   example: OK
- *                 data:
- *                   type: array 
- *                   items: 
- *                     type: object
- */
-
-router.post('/recuperar-password',recuperarPassword)
-
-
-/**
- * @openapi
- * /api/nuevo-password:
- *   post:
- *     tags:
- *       - Nueva Contraseña Usuario
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               password:
- *                 type: string
- *                 example: contraseña
- *               confirm-password:
- *                 type: string
- *                 example: contraseña
- *     responses:
- *       200:
- *         description: OK
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Ya puede iniciar sesión.
- *                 status:
- *                   type: string
- *                   example: OK
- *                 data:
- *                   type: array 
- *                   items: 
- *                     type: object
- */
-
-router.post('/nuevo-password',nuevoPassword)
-
-
-
-/**
- * @openapi
- * /api/usuario/actualizarpassword:
- *   put:
- *     tags:
- *       - Usuarios
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               old_password:
- *                 type: string
- *                 example: 4FYSTYaaA1564
- *               new_password:
- *                 type: string
- *                 example: 4FYSTYaaA1564
- *     responses:
- *       200:
- *         description: OK
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Contraseña actualizada exitosamente.
- *                 status:
- *                   type: string
- *                   example: OK
- *                 data:
- *                   type: object
- *                   properties:
- *                     result:
- *                       type: string
- *                       example: Password updated successfully.
- */
-
-
-router.put('/usuario/actualizarpassword',actualizarPassword)
-
-/**
- * @openapi
- * /api/usuario/{id}:
+ * /api/estudiantes/{id}:
  *   get:
  *     tags:
- *       - Usuarios
+ *       - Estudiantes
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -291,13 +184,13 @@ router.put('/usuario/actualizarpassword',actualizarPassword)
  *                           example: juan@example.com
  */
 
-router.get('/usuario/:id',detalleUsuarios)
+router.get('/estudiantes/:id',detalleEstudiante)
 /**
  * @openapi
- * /api/usuario/{id}:
+ * /api/estudiantes/actulizar/{id}:
  *   put:
  *     tags:
- *       - Usuarios
+ *       - Estudiantes
  *     requestBody:
  *       required: true
  *       content:
@@ -366,9 +259,47 @@ router.get('/usuario/:id',detalleUsuarios)
 
 
 
-router.put('/usuario/:id',actualizarPerfil)
+router.put('/estudiantes/actualizar/:id',actualizarEstudiante)
 
-
+/**
+ * @openapi
+ * /api/estudaintes/eliminar/{id}:
+ *   delete:
+ *     tags:
+ *       - Estudiantes
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID del estudiante
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               salida:
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 data:
+ *                   type: array 
+ *                   items: 
+ *                     type: object
+ */
+router.delete("/estudiantes/eliminar/:id",eliminarEstudiante);
 
 export default router
 
